@@ -11,18 +11,25 @@ const firebaseConfig = {
   messagingSenderId: "413035086313",
   appId: "1:413035086313:web:d455fe1a11f3c09aba4b78",
 };
-
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
-messaging.onBackgroundMessage(function (payload) {
-  console.log("Received background message ", payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: "/logo192.png",
-  };
-  return self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
+messaging.setBackgroundMessageHandler(function (payload) {
+  const promiseChain = clients
+    .matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    })
+    .then((windowClients) => {
+      for (let i = 0; i < windowClients.length; i++) {
+        const windowClient = windowClients[i];
+        windowClient.postMessage(payload);
+      }
+    })
+    .then(() => {
+      return registration.showNotification("my notification title");
+    });
+  return promiseChain;
+});
+self.addEventListener("notificationclick", function (event) {
+  console.log(event);
 });

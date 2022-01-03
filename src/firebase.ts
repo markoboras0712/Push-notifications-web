@@ -25,24 +25,24 @@ onMessage(messaging, (payload) => {
   console.log("Message received. ", payload);
   // ...
 });
-declare global {
-  interface Window {
-    FB: any;
-  }
-}
-let FB = window.FB;
+// declare global {
+//   interface Window {
+//     FB: any;
+//   }
+// }
+// let FB = window.FB;
 
-onBackgroundMessage(messaging, (payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
-  // Customize notification here
-  const notificationTitle = "Background Message Title";
-  const notificationOptions = {
-    body: "Background Message body.",
-    icon: "/firebase-logo.png",
-  };
+// onBackgroundMessage(messaging, (payload) => {
+//   console.log(
+//     "[firebase-messaging-sw.js] Received background message ",
+//     payload
+//   );
+//   // Customize notification here
+//   const notificationTitle = "Background Message Title";
+//   const notificationOptions = {
+//     body: "Background Message body.",
+//     icon: "/firebase-logo.png",
+//   };
 
-  self.FB.showNotification(notificationTitle, notificationOptions);
-});
+//   self.FB.showNotification(notificationTitle, notificationOptions);
+// });
