@@ -1,7 +1,11 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-undef */
-importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.2.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.2.0/firebase-messaging-compat.js"
+);
 
 const firebaseConfig = {
   apiKey: "AIzaSyBKzvX7FxaHODz5hH7aHM9k39wBYxW5O9A",
@@ -12,24 +16,25 @@ const firebaseConfig = {
   appId: "1:413035086313:web:d455fe1a11f3c09aba4b78",
 };
 firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
-messaging.setBackgroundMessageHandler(function (payload) {
-  const promiseChain = clients
-    .matchAll({
-      type: "window",
-      includeUncontrolled: true,
-    })
-    .then((windowClients) => {
-      for (let i = 0; i < windowClients.length; i++) {
-        const windowClient = windowClients[i];
-        windowClient.postMessage(payload);
-      }
-    })
-    .then(() => {
-      return registration.showNotification("my notification title");
-    });
-  return promiseChain;
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
 });
-self.addEventListener("notificationclick", function (event) {
-  console.log(event);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function (payload) {
+  console.log(
+    "[firebase-messaging-sw.js] Received background message ",
+    payload.notification
+  );
+
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: "./logo192.png",
+  };
+
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions
+  );
 });
